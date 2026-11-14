@@ -1,9 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
-import { ScrollView, Text, View } from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Badge from "@/components/ui/Badge";
 import Card from "@/components/ui/Card";
+import { PillButton } from "@/components/ui/PillButton";
 import { colors } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -17,7 +18,14 @@ function Ligne({ libelle, valeur }: { libelle: string; valeur: string }) {
 }
 
 export default function ProfileScreen() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+
+  const confirmerDeconnexion = () => {
+    Alert.alert("Se déconnecter ?", "Vous devrez saisir à nouveau vos identifiants.", [
+      { text: "Annuler", style: "cancel" },
+      { text: "Se déconnecter", style: "destructive", onPress: () => logout() },
+    ]);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
@@ -37,6 +45,10 @@ export default function ProfileScreen() {
           <Ligne libelle="Téléphone" valeur={user?.telephone ?? "—"} />
           <Ligne libelle="Identifiant" valeur={user ? user.id.slice(0, 8) : "—"} />
         </Card>
+
+        <View className="mt-8">
+          <PillButton label="Se déconnecter" variant="outline" onPress={confirmerDeconnexion} />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

@@ -1,7 +1,9 @@
-import { FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Badge from "@/components/ui/Badge";
+import ErrorState from "@/components/ui/ErrorState";
+import { colors } from "@/constants/theme";
 import { useHistoriqueScans } from "@/hooks/useScan";
 import { LIBELLES_RESULTAT, ResultatScan } from "@/types/scan";
 
@@ -45,6 +47,15 @@ export default function HistoryScreen() {
             <Badge label={LIBELLES_RESULTAT[item.resultat]} ton={TON[item.resultat]} />
           </View>
         )}
+        ListEmptyComponent={
+          scans.isPending ? (
+            <View className="py-12">
+              <ActivityIndicator color={colors.primary} />
+            </View>
+          ) : scans.isError ? (
+            <ErrorState message={(scans.error as Error).message} onRetry={() => scans.refetch()} />
+          ) : null
+        }
       />
     </SafeAreaView>
   );

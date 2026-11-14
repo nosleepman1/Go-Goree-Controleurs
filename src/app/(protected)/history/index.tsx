@@ -1,7 +1,8 @@
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Badge from "@/components/ui/Badge";
+import EmptyState from "@/components/ui/EmptyState";
 import ErrorState from "@/components/ui/ErrorState";
 import { colors } from "@/constants/theme";
 import { useHistoriqueScans } from "@/hooks/useScan";
@@ -29,6 +30,9 @@ export default function HistoryScreen() {
         data={scans.data ?? []}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
+        refreshControl={
+          <RefreshControl refreshing={scans.isRefetching} onRefresh={() => scans.refetch()} />
+        }
         renderItem={({ item }) => (
           <View className="mb-3 flex-row items-center rounded-2xl border border-gray-200 bg-white p-4">
             <View className="flex-1">
@@ -54,7 +58,13 @@ export default function HistoryScreen() {
             </View>
           ) : scans.isError ? (
             <ErrorState message={(scans.error as Error).message} onRetry={() => scans.refetch()} />
-          ) : null
+          ) : (
+            <EmptyState
+              icon="time-outline"
+              title="Aucun scan enregistré"
+              message="Les billets que vous scannerez apparaîtront ici."
+            />
+          )
         }
       />
     </SafeAreaView>
